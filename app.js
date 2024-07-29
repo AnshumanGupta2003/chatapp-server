@@ -32,7 +32,7 @@ dotenv.config({
 
 const mongoURI = process.env.MONGO_URI;
 const port = process.env.PORT || 3000;
-const envMode = process.env.NODE_ENV.trim() || "PRODUCTION";
+const envMode = (process.env.NODE_ENV ? process.env.NODE_ENV.trim() : "PRODUCTION") || "PRODUCTION";
 const adminSecretKey = process.env.ADMIN_SECRET_KEY || "adsasdsdfsdfsdfd";
 const userSocketIDs = new Map();
 const onlineUsers = new Set();
@@ -52,7 +52,13 @@ const io = new Server(server, {
 });
 
 app.set("io", io);
-
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
 // Using Middlewares Here
 app.use(express.json());
 app.use(cookieParser());
